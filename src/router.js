@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Homepage from './components/Homepage'
-import Signin from './components/Signin'
+import Rating from './components/Rating'
+import LoginDialog from './components/LoginDialog'
+import CreateRating from './components/CreateRating.vue'
 
 const routes = [
     {
@@ -8,8 +10,17 @@ const routes = [
         component: Homepage
     },
     {
-        path: '/signin',
-        component: Signin,
+        path: '/rating',
+        component: Rating,
+    },
+    {
+        path: '/login',
+        component: LoginDialog,
+    },
+    {
+        path: '/create-rating',
+        name: 'CreateRating',
+        component: CreateRating,
     }
 ]
 

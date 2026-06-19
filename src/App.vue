@@ -1,38 +1,47 @@
 <template>
   <div id="app">
-    <div v-if="!this.$store.state.preLoading">
-      <router-view></router-view>
+    <Menu />
+    <div v-if="$store.state.preLoading" class="loader">
+      <h3>Загрузка...</h3>
     </div>
     <div v-else>
-      Загрузка...
+      <router-view></router-view>
     </div>
   </div>
 </template>
 
 <script>
 import store from "./state";
-import router from "./router";
+import Menu from "./components/Menu";
 
 export default {
+  components: { Menu },
   computed: {
-    user(){
+    user() {
       return this.$store.state.user;
     },
   },
-  watch: {
-    user(newValue) {
-      // Только если user появился (не null и не undefined)
-      if (newValue && newValue.id) {
-        router.push('/');
-      }
-    }
-  },
   mounted() {
     const token = localStorage.getItem('token');
-    if(token){
+    if (token) {
       store.commit('setToken', token);
-      this.$store.dispatch('getUser')
+      store.commit('setLoggedIn', true);
+      this.$store.dispatch('getUser');
     }
   }
 };
 </script>
+
+<style>
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #2c3e50;
+  margin-top: 20px;
+}
+.loader {
+  text-align: center;
+  margin-top: 50px;
+}
+</style>
