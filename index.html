@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CURating</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; }
+        
+        /* Меню */
+        .navbar {
+            background: #1976d2;
+            color: white;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            height: 56px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .navbar-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .navbar-logo svg { width: 24px; height: 24px; }
+        .navbar-menu {
+            margin-left: 30px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        .navbar-menu a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+        .navbar-menu a:hover { opacity: 0.85; }
+        .navbar-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .navbar-right .user-name { font-size: 14px; }
+        .btn-login {
+            background: white;
+            color: #1976d2;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-login:hover { background: #e3f2fd; }
+        .btn-logout {
+            background: transparent;
+            color: white;
+            border: 1px solid white;
+            padding: 6px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-logout:hover { background: rgba(255,255,255,0.1); }
+
+        /* Главная страница */
+        .home-page {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 56px);
+            padding: 40px 20px;
+        }
+        .home-card {
+            background: white;
+            border-radius: 12px;
+            padding: 60px 80px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            max-width: 600px;
+        }
+        .home-icon {
+            font-size: 80px;
+            margin-bottom: 10px;
+        }
+        .home-stars {
+            color: #ffc107;
+            font-size: 28px;
+            margin-bottom: 20px;
+            letter-spacing: 4px;
+        }
+        .home-title {
+            font-size: 42px;
+            font-weight: 300;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .home-desc {
+            color: #666;
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        .btn-home-login {
+            background: #1976d2;
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-home-login:hover { background: #1565c0; }
+
+        /* Страница рейтинга */
+        .rating-page {
+            padding: 30px 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .rating-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .rating-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+        }
+        .btn-add {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-add:hover { background: #43a047; }
+        .rating-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+        }
+        .rating-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .rating-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+        }
+        .card-header {
+            background: #f8f9fa;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+        }
+        .card-name {
+            font-weight: bold;
+            font-size: 15px;
+            color: #333;
+        }
+        .card-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .card-actions button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 4px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        .card-actions button:hover { background: #e0e0e0; }
+        .btn-delete { color: #e53935; }
+        .btn-edit { color: #1976d2; }
+        .card-body {
+            padding: 20px;
+            text-align: center;
+        }
+        .card-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 15px;
+        }
+        .card-age {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* Модальное окно входа */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            width: 400px;
+            max-width: 90%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .modal-title { font-size: 20px; font-weight: bold; }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+        .form-group { margin-bottom: 16px; }
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+            font-size: 14px;
+            color: #333;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #1976d2;
+        }
+        .form-error {
+            color: #e53935;
+            font-size: 13px;
+            margin-top: 4px;
+            display: none;
+        }
+        .form-error.active { display: block; }
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid #eee;
+        }
+        .btn-cancel {
+            background: #f5f5f5;
+            color: #333;
+            border: 1px solid #ddd;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-cancel:hover { background: #eee; }
+        .btn-submit {
+            background: #1976d2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .btn-submit:hover { background: #1565c0; }
+        .btn-submit:disabled { background: #bbb; cursor: not-allowed; }
+
+        /* Модалка создания */
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 6px;
+        }
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: normal;
+            cursor: pointer;
+        }
+
+        /* Подтверждение удаления */
+        .confirm-modal .modal { width: 350px; }
+        .confirm-message {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .confirm-icon {
+            font-size: 28px;
+            color: #ff9800;
+        }
+        .confirm-text { font-size: 15px; color: #333; line-height: 1.5; }
+        .btn-confirm-delete {
+            background: #e53935;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-confirm-delete:hover { background: #c62828; }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <!-- Навбар -->
+    <nav class="navbar">
+        <div class="navbar-logo">
+            <svg viewBox="0 0 24 24" fill="white"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            <span>Рейтинги</span>
+        </div>
+        <div class="navbar-menu" id="navMenu">
+            <a id="navRating" class="hidden" onclick="showRating()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 16l4-8 4 4 4-6"/></svg>
+                Рейтинг
+            </a>
+        </div>
+        <div class="navbar-right">
+            <span class="user-name hidden" id="userName"></span>
+            <button class="btn-login" id="btnLoginNav" onclick="openLoginModal()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                Вход
+            </button>
+            <button class="btn-logout hidden" id="btnLogout" onclick="logout()">Выйти</button>
+        </div>
+    </nav>
+
+    <!-- Главная страница -->
+    <div class="home-page" id="homePage">
+        <div class="home-card">
+            <div class="home-stars">⭐⭐⭐</div>
+            <h1 class="home-title">CURating</h1>
+            <p class="home-desc">
+                Это приложение поможет создавать расписание активностей и вести учёт индивидуальных достижений (рейтинг) детей дошкольного и школьного возраста.
+            </p>
+            <button class="btn-home-login" onclick="openLoginModal()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                Вход
+            </button>
+        </div>
+    </div>
+
+    <!-- Страница рейтинга -->
+    <div class="rating-page hidden" id="ratingPage">
+        <div class="rating-header">
+            <h1 class="rating-title">Рейтинги</h1>
+            <button class="btn-add" onclick="openCreateModal()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Добавить новую запись
+            </button>
+        </div>
+        <div class="rating-grid" id="ratingGrid"></div>
+    </div>
+
+    <!-- Модалка входа -->
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Вход в систему</h2>
+                <button class="modal-close" onclick="closeLoginModal()">×</button>
+            </div>
+            <div class="form-group">
+                <label>Логин</label>
+                <input type="text" id="loginInput" placeholder="Введите логин" value="administrator">
+                <div class="form-error" id="loginError">Неверный логин или пароль</div>
+            </div>
+            <div class="form-group">
+                <label>Пароль</label>
+                <input type="password" id="passwordInput" placeholder="Введите пароль" value="password">
+            </div>
+            <div class="modal-footer">
+                <button class="btn-submit" onclick="doLogin()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                    Войти
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модалка создания -->
+    <div class="modal-overlay" id="createModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Создание новой карточки</h2>
+                <button class="modal-close" onclick="closeCreateModal()">×</button>
+            </div>
+            <div class="form-group">
+                <label>Имя пользователя</label>
+                <input type="text" id="createName" placeholder="Введите имя">
+            </div>
+            <div class="form-group">
+                <label>Описание</label>
+                <textarea id="createDesc" rows="3" placeholder="Краткое описание"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Дата рождения</label>
+                <input type="date" id="createBirthday">
+            </div>
+            <div class="form-group">
+                <label>Пол</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="gender" value="male" checked> Мужской</label>
+                    <label><input type="radio" name="gender" value="female"> Женский</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeCreateModal()">Отмена</button>
+                <button class="btn-submit" id="btnSave" onclick="saveRating()">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модалка подтверждения удаления -->
+    <div class="modal-overlay confirm-modal" id="confirmModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Подтверждение удаления</h2>
+                <button class="modal-close" onclick="closeConfirmModal()">×</button>
+            </div>
+            <div class="confirm-message">
+                <span class="confirm-icon">⚠️</span>
+                <span class="confirm-text" id="confirmText">Вы действительно хотите удалить запись?</span>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeConfirmModal()">Отмена</button>
+                <button class="btn-confirm-delete" id="btnConfirmDelete">Да, удалить</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Данные
+        let ratings = [
+            { id: 1, name: 'Тимофей', description: 'Лучший установщик кондиционеров', gender: 'male', birthday: '2020-01-15' },
+            { id: 2, name: 'Евгения', description: 'Менеджер по работе с клиентами', gender: 'female', birthday: '2017-05-20' },
+            { id: 3, name: 'Ваня', description: 'Старший бригадир', gender: 'male', birthday: '2025-05-10' },
+            { id: 4, name: 'Артем', description: 'Мастер алмазного бурения', gender: 'male', birthday: '2026-06-07' },
+            { id: 5, name: 'Маша', description: 'Дизайнер интерьеров', gender: 'female', birthday: '2019-03-12' },
+            { id: 6, name: 'Давид', description: 'Инженер-программист', gender: 'male', birthday: '2018-08-25' },
+            { id: 7, name: 'Софья', description: 'Преподаватель музыки', gender: 'female', birthday: '2021-11-03' },
+            { id: 8, name: 'Ричард', description: 'Спортивный тренер', gender: 'male', birthday: '2016-04-18' }
+        ];
+
+        let currentUser = null;
+        let deleteId = null;
+
+        // Аватарки (SVG data URI)
+        const avatarMale = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><circle cx="60" cy="60" r="60" fill="#e3f2fd"/><circle cx="60" cy="45" r="22" fill="#5c6bc0"/><path d="M20 110 Q20 75 60 75 Q100 75 100 110 Z" fill="#5c6bc0"/></svg>');
+        const avatarFemale = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><circle cx="60" cy="60" r="60" fill="#fce4ec"/><circle cx="60" cy="45" r="22" fill="#e91e63"/><path d="M20 110 Q20 75 60 75 Q100 75 100 110 Z" fill="#e91e63"/><path d="M38 30 Q60 10 82 30 Q75 20 60 18 Q45 20 38 30" fill="#e91e63"/></svg>');
+
+        function getAvatar(gender) {
+            return gender === 'female' ? avatarFemale : avatarMale;
+        }
+
+        function getAge(birthday) {
+            if (!birthday) return 'Не указан';
+            const now = new Date();
+            const birth = new Date(birthday);
+            let years = now.getFullYear() - birth.getFullYear();
+            let months = now.getMonth() - birth.getMonth();
+            if (months < 0 || (months === 0 && now.getDate() < birth.getDate())) {
+                years--;
+                months += 12;
+            }
+            if (years === 0) return months + ' мес.';
+            let yearWord = 'лет';
+            if (years % 10 === 1 && years % 100 !== 11) yearWord = 'год';
+            else if ([2,3,4].includes(years % 10) && ![12,13,14].includes(years % 100)) yearWord = 'года';
+            return years + ' ' + yearWord + (months > 0 ? ' ' + months + ' мес.' : '');
+        }
+
+        // Навигация
+        function showHome() {
+            document.getElementById('homePage').classList.remove('hidden');
+            document.getElementById('ratingPage').classList.add('hidden');
+        }
+
+        function showRating() {
+            if (!currentUser) { openLoginModal(); return; }
+            document.getElementById('homePage').classList.add('hidden');
+            document.getElementById('ratingPage').classList.remove('hidden');
+            renderRatings();
+        }
+
+        // Авторизация
+        function openLoginModal() {
+            document.getElementById('loginModal').classList.add('active');
+            document.getElementById('loginError').classList.remove('active');
+        }
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.remove('active');
+        }
+
+        function doLogin() {
+            const login = document.getElementById('loginInput').value.trim();
+            const password = document.getElementById('passwordInput').value.trim();
+            if (login === 'administrator' && password === 'password') {
+                currentUser = { username: 'administrator', group_name: 'Администратор' };
+                document.getElementById('loginError').classList.remove('active');
+                closeLoginModal();
+                updateUI();
+                showRating();
+            } else {
+                document.getElementById('loginError').classList.add('active');
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            updateUI();
+            showHome();
+        }
+
+        function updateUI() {
+            const isLoggedIn = !!currentUser;
+            document.getElementById('navRating').classList.toggle('hidden', !isLoggedIn);
+            document.getElementById('userName').classList.toggle('hidden', !isLoggedIn);
+            document.getElementById('btnLoginNav').classList.toggle('hidden', isLoggedIn);
+            document.getElementById('btnLogout').classList.toggle('hidden', !isLoggedIn);
+            if (currentUser) {
+                document.getElementById('userName').textContent = currentUser.username;
+            }
+        }
+
+        // Рейтинг
+        function renderRatings() {
+            const grid = document.getElementById('ratingGrid');
+            grid.innerHTML = ratings.map(r => `
+                <div class="rating-card">
+                    <div class="card-header">
+                        <span class="card-name">${r.name}</span>
+                        <div class="card-actions">
+                            <button class="btn-delete" onclick="confirmDelete(${r.id})" title="Удалить">🗑️</button>
+                            <button class="btn-edit" title="Редактировать">⚙️</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <img class="card-avatar" src="${getAvatar(r.gender)}" alt="${r.name}">
+                        <div class="card-age">Возраст: ${getAge(r.birthday)}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Создание
+        function openCreateModal() {
+            document.getElementById('createModal').classList.add('active');
+            document.getElementById('createName').value = '';
+            document.getElementById('createDesc').value = '';
+            document.getElementById('createBirthday').value = '';
+            document.querySelector('input[name="gender"][value="male"]').checked = true;
+        }
+        function closeCreateModal() {
+            document.getElementById('createModal').classList.remove('active');
+        }
+
+        function saveRating() {
+            const name = document.getElementById('createName').value.trim();
+            const desc = document.getElementById('createDesc').value.trim();
+            const birthday = document.getElementById('createBirthday').value;
+            const gender = document.querySelector('input[name="gender"]:checked').value;
+            if (!name || !birthday || !gender) { alert('Заполните обязательные поля'); return; }
+            const newId = ratings.length ? Math.max(...ratings.map(r => r.id)) + 1 : 1;
+            ratings.push({ id: newId, name, description: desc || 'Описание отсутствует', gender, birthday });
+            closeCreateModal();
+            renderRatings();
+        }
+
+        // Удаление
+        function confirmDelete(id) {
+            deleteId = id;
+            const item = ratings.find(r => r.id === id);
+            document.getElementById('confirmText').textContent = `Вы действительно хотите удалить пользователя "${item.name}"?`;
+            document.getElementById('confirmModal').classList.add('active');
+            document.getElementById('btnConfirmDelete').onclick = function() {
+                ratings = ratings.filter(r => r.id !== deleteId);
+                closeConfirmModal();
+                renderRatings();
+            };
+        }
+        function closeConfirmModal() {
+            document.getElementById('confirmModal').classList.remove('active');
+            deleteId = null;
+        }
+
+        // Закрытие модалок по клику на оверлей
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', function(e) {
+                if (e.target === this) this.classList.remove('active');
+            });
+        });
+
+        // Enter в форме входа
+        document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') doLogin();
+        });
+    </script>
+</body>
+</html>
